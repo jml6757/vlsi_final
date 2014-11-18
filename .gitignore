@@ -1,0 +1,6 @@
+*.vhd.bak
+*.mpf
+*.wlf
+work/
+*.mti
+transcript
