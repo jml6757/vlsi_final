@@ -41,7 +41,7 @@ begin
   mac_inst1: entity work.mac121(behavioral)
     port map(D, E, F, SUBTRAHEND);
 
-  sub_inst0: entity work.sub2(behavioral)
+  absdiff_inst0: entity work.absdiff2(behavioral)
     port map(MINUEND, SUBTRAHEND, DIFF_OUT);
 
   max_inst0: entity work.max2(behavioral)
