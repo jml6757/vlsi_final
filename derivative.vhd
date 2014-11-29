@@ -1,7 +1,6 @@
-
 --------------------------------------------------------------------------------
--- deriv: Determine the derivative given 6 pixel values (A-F) and their
---        direction encodings (DIR1 and DIR1)
+-- derivative: Determine the derivative given 6 pixel values (A-F) and their
+--             direction encodings (DIR1 and DIR1)
 --------------------------------------------------------------------------------
 
 library ieee;
@@ -11,7 +10,7 @@ use ieee.numeric_std.all;
 --------------------------------------------------------------------------------
 -- Entity
 --------------------------------------------------------------------------------
-entity  deriv is
+entity  derivative is
    generic (n : integer := 8); 
    port (A       : in std_logic_vector (n-1 downto 0);
          B       : in std_logic_vector (n-1 downto 0);
@@ -24,15 +23,15 @@ entity  deriv is
          DIFF_OUT: out std_logic_vector (n-1 downto 0);
          DIR_OUT : out std_logic_vector (2 downto 0)
         );
-end deriv;
+end derivative;
 
 --------------------------------------------------------------------------------
 -- Architecture
 --------------------------------------------------------------------------------
-architecture behavioral of deriv is
+architecture behavioral of derivative is
   signal MINUEND : std_logic_vector(n-1 downto 0);
   signal SUBTRAHEND : std_logic_vector(n-1 downto 0);
-  signal UNUSED : std_logic_vector(n-1 downto 0);
+  signal GREATEST : std_logic;
 begin 
   
   mac_inst0: entity work.mac121(behavioral)
@@ -42,10 +41,10 @@ begin
     port map(D, E, F, SUBTRAHEND);
 
   absdiff_inst0: entity work.absdiff2(behavioral)
-    port map(MINUEND, SUBTRAHEND, DIFF_OUT);
+    port map(MINUEND, SUBTRAHEND, DIFF_OUT, GREATEST);
 
-  max_inst0: entity work.max2(behavioral)
-    port map(MINUEND, DIR1, SUBTRAHEND, DIR1, UNUSED, DIR_OUT);
+  mux_inst0: entity work.mux2(behavioral)
+    port map(DIR1, DIR2, GREATEST, DIR_OUT);
 
 end behavioral;
 

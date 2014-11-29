@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- testbench_max2: Tests the max2 block
+-- tb_max2: Maximum of two numbers testbench
 --------------------------------------------------------------------------------
 
 library ieee;
@@ -8,14 +8,14 @@ use ieee.std_logic_1164.all;
 --------------------------------------------------------------------------------
 -- Entity
 --------------------------------------------------------------------------------
-entity  testbench_max2 is
+entity  tb_max2 is
    generic (n : integer := 8); 
-end testbench_max2;
+end tb_max2;
 
 --------------------------------------------------------------------------------
 -- Architecture
 --------------------------------------------------------------------------------
-architecture tb of testbench_max2 is
+architecture tb of tb_max2 is
   signal A       : std_logic_vector (n-1 downto 0);
   signal A_DIR   : std_logic_vector (2 downto 0);
   signal B       : std_logic_vector (n-1 downto 0);

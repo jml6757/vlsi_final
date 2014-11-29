@@ -1,5 +1,8 @@
 --------------------------------------------------------------------------------
--- mac121: Multiply and accumulate with multipliers of 1, 2, and 1
+-- mac121: Multiply and accumulate with multipliers coefficients. The sum
+--         should be (n + log(sum(multiplier_coefficients))) bits wide to make 
+--         sure that no data is lost. For the case of 1, 2, 1 coefficients, this 
+--         means the output needs to be 10 bits.  
 --------------------------------------------------------------------------------
 
 library ieee;
@@ -24,8 +27,10 @@ end mac121;
 architecture behavioral of mac121 is
   signal B_SHIFTED : std_logic_vector(n-1 downto 0);
 begin 
+
   B_SHIFTED(n-1 downto 1) <= B(n-2 downto 0);
   B_SHIFTED(0) <= '0';
   SUM <= std_logic_vector(unsigned(A) + unsigned(B_SHIFTED) + unsigned(C));
+
 end behavioral;
 

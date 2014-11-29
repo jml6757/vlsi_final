@@ -46,28 +46,27 @@ architecture behavioral of sobel is
   
 begin 
 
-
--- Get derivatives of each direction
-deriv_NE_SW: entity work.deriv(behavioral)
+  -- Get derivatives of each direction
+  deriv_NE_SW: entity work.derivative(behavioral)
     port map(T01, T02, T12, T10, T20, T21, DIR_NE, DIR_SW, deriv_out_NE_SW, deriv_dir_NE_SW);
 
-deriv_N_S:   entity work.deriv(behavioral)
-    port map(T00, T01, T02, T20, T21, T22, DIR_N, DIR_S, deriv_out_N_S, deriv_dir_N_S);
+  deriv_N_S:   entity work.derivative(behavioral)
+      port map(T00, T01, T02, T20, T21, T22, DIR_N, DIR_S, deriv_out_N_S, deriv_dir_N_S);
 
-deriv_E_W:   entity work.deriv(behavioral)
+  deriv_E_W:   entity work.derivative(behavioral)
     port map(T02, T12, T22, T00, T10, T20, DIR_E, DIR_W, deriv_out_E_W, deriv_dir_E_W);
-      
-deriv_NW_SE: entity work.deriv(behavioral)
+        
+  deriv_NW_SE: entity work.derivative(behavioral)
     port map(T10, T00, T01, T21, T22, T12, DIR_NW, DIR_SE, deriv_out_NW_SE, deriv_dir_NW_SE);
 
--- Determine maximum derivative
-maximum: entity work.max4(behavioral)
+  -- Determine maximum derivative
+  maximum: entity work.max4(behavioral)
     port map(deriv_out_NE_SW, deriv_dir_NE_SW, 
              deriv_out_N_S, deriv_dir_N_S, 
              deriv_out_E_W, deriv_dir_E_W, 
              deriv_out_NW_SE, deriv_dir_NW_SE,
              DERIVATIVE, DIRECTION);
-      
+        
 end behavioral;
 
 
