@@ -1,38 +1,34 @@
 --------------------------------------------------------------------------------
--- absdiff2: Gets the absolute difference between two numbers and also outputs
----          the index of which one is greater (A=0, B=1)
+-- maxidx2: Compares two numbers and returns the index of the larger one. 0 for
+--          the A input and 1 for the B input. 
 --------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
 
 --------------------------------------------------------------------------------
 -- Entity
 --------------------------------------------------------------------------------
-entity  absdiff2 is
+entity  maxidx2 is
    generic (n : integer := 8); 
-   port (A        : in std_logic_vector (n-1 downto 0);
-         B        : in std_logic_vector (n-1 downto 0);
-         DIFF     : out std_logic_vector (n-1 downto 0);
-         GREATEST : out std_logic
+   port (A       : in std_logic_vector (n-1 downto 0);
+         B       : in std_logic_vector (n-1 downto 0);
+         IDX     : out std_logic
         );
-end absdiff2;
+end maxidx2;
 
 --------------------------------------------------------------------------------
 -- Architecture
 --------------------------------------------------------------------------------
-architecture behavioral of absdiff2 is
+architecture behavioral of maxidx2 is
 begin 
-  
+
   process(A, B)
   begin
     if(A > B) then
-      DIFF <= std_logic_vector(unsigned(A) - unsigned(B));
-      GREATEST <= '0';
+      IDX <= '0';
     else
-      DIFF <= std_logic_vector(unsigned(B) - unsigned(A));
-      GREATEST <= '1';
+      IDX <= '1';
     end if;
   end process;
 
