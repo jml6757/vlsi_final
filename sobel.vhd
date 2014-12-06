@@ -62,8 +62,10 @@ architecture behavioral of sobel is
   signal MAX_PERPENDICULAR : std_logic_vector(7 downto 0);
 
   -- The calculated data for thresholding
-  signal EDGE_VALUE : std_logic_vector(7 downto 0);
-  constant EDGE_THRESHOLD : std_logic_vector(9 downto 0) := "0001010000";
+  signal EDGE_VALUE : std_logic_vector(7 downto 0); 
+  
+  -- 80 percent of max value (1020) so 816
+  constant EDGE_THRESHOLD : std_logic_vector(9 downto 0) := "1100110000";
 
 
 begin
