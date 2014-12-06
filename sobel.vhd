@@ -93,14 +93,15 @@ begin
   EDGE_VALUE <= std_logic_vector(unsigned(MAX_DERIVATIVE) + unsigned("000" & MAX_PERPENDICULAR(7 downto 3)));
 
   -- Set the output values
-  DIRECTION <= MAX_DIRECTION;
 
   process(EDGE_VALUE)
   begin
     if(EDGE_VALUE > EDGE_THRESHOLD) then
       EDGE <= '1';
+      DIRECTION <= MAX_DIRECTION;
     else
       EDGE <= '0';
+      DIRECTION <= "000";
     end if;
   end process;
 
