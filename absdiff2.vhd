@@ -12,9 +12,9 @@ use ieee.numeric_std.all;
 --------------------------------------------------------------------------------
 entity  absdiff2 is
    generic (n : integer := 8); 
-   port (A        : in std_logic_vector (n-1 downto 0);
-         B        : in std_logic_vector (n-1 downto 0);
-         DIFF     : out std_logic_vector (n-1 downto 0);
+   port (A        : in std_logic_vector (10 downto 0);
+         B        : in std_logic_vector (10 downto 0);
+         DIFF     : out std_logic_vector (10 downto 0);
          GREATEST : out std_logic
         );
 end absdiff2;
