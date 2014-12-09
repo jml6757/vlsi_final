@@ -98,7 +98,7 @@ begin
             end loop;
         end loop;
   
-        col := 2;
+        col := 1;
         row := 2;
         readdone <= true;
         wait;
@@ -111,7 +111,7 @@ begin
        
         wait until CLOCK'event and CLOCK = '1';
         
-        if (readdone = true) then
+        if (readdone = true and row < im_row) then
             if (READY = '1') then  
 
                 -- gets every pixel in the column then moves to a new row
@@ -122,8 +122,8 @@ begin
                     col := col + 1;
                 end if;
     
-                if row <= im_row-2 then
-                    if col <= im_col-2 then
+                if row <= im_row-1 then
+                    if col <= im_col-1 then
                         -- Load in 3x3 pixel map.
                         t00 <= std_logic_vector(to_unsigned(inimage(row-1,col-1), 8));
                         t01 <= std_logic_vector(to_unsigned(inimage(row-1,col), 8));
@@ -167,7 +167,7 @@ begin
 
     -- Filter Output Handler 
     -- Sets pixels on an edge to white, all others will be black
-    edge_detect: process(EDGE)
+    edge_detect: process(O_VALID)
     begin
         if(EDGE = '1' and O_VALID = '1') then
             outimage(row,col) := 255;
