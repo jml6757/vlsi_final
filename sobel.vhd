@@ -45,10 +45,10 @@ architecture behavioral of sobel is
   constant DIR_SW : std_logic_vector(2 downto 0) := "111";
 
   -- Derivative output values
-  signal deriv_out_NE_SW : std_logic_vector(7 downto 0);
-  signal deriv_out_N_S   : std_logic_vector(7 downto 0);
-  signal deriv_out_E_W   : std_logic_vector(7 downto 0);
-  signal deriv_out_NW_SE : std_logic_vector(7 downto 0);
+  signal deriv_out_NE_SW : std_logic_vector(10 downto 0);
+  signal deriv_out_N_S   : std_logic_vector(10 downto 0);
+  signal deriv_out_E_W   : std_logic_vector(10 downto 0);
+  signal deriv_out_NW_SE : std_logic_vector(10 downto 0);
 
   -- Derivative output directions
   signal deriv_dir_NE_SW : std_logic_vector(2 downto 0);
@@ -58,14 +58,14 @@ architecture behavioral of sobel is
 
   -- Maximum derivative output
   signal MAX_DIRECTION     : std_logic_vector(2 downto 0);
-  signal MAX_DERIVATIVE    : std_logic_vector(7 downto 0);
-  signal MAX_PERPENDICULAR : std_logic_vector(7 downto 0);
+  signal MAX_DERIVATIVE    : std_logic_vector(10 downto 0);
+  signal MAX_PERPENDICULAR : std_logic_vector(10 downto 0);
 
   -- The calculated data for thresholding
-  signal EDGE_VALUE : std_logic_vector(7 downto 0); 
+  signal EDGE_VALUE : std_logic_vector(10 downto 0); 
   
-  -- 80 percent of max value (1020) so 816
-  constant EDGE_THRESHOLD : std_logic_vector(9 downto 0) := "1100110000";
+  -- 80
+  constant EDGE_THRESHOLD : std_logic_vector(10 downto 0) := "00001010000";
 
 
 begin
@@ -75,7 +75,7 @@ begin
     port map(T01, T02, T12, T10, T20, T21, DIR_NE, DIR_SW, deriv_out_NE_SW, deriv_dir_NE_SW);
 
   deriv_N_S:   entity work.derivative(behavioral)
-      port map(T00, T01, T02, T20, T21, T22, DIR_N, DIR_S, deriv_out_N_S, deriv_dir_N_S);
+    port map(T00, T01, T02, T20, T21, T22, DIR_N, DIR_S, deriv_out_N_S, deriv_dir_N_S);
 
   deriv_E_W:   entity work.derivative(behavioral)
     port map(T02, T12, T22, T00, T10, T20, DIR_E, DIR_W, deriv_out_E_W, deriv_dir_E_W);
@@ -92,7 +92,7 @@ begin
              MAX_DIRECTION, MAX_DERIVATIVE, MAX_PERPENDICULAR);
 
   -- Determine the edge value to be thresholded
-  EDGE_VALUE <= std_logic_vector(unsigned(MAX_DERIVATIVE) + unsigned("000" & MAX_PERPENDICULAR(7 downto 3)));
+  EDGE_VALUE <= std_logic_vector(unsigned(MAX_DERIVATIVE) + unsigned("000" & MAX_PERPENDICULAR(10 downto 3)));
 
   -- Set the output values
 

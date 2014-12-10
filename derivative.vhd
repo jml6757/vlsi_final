@@ -20,7 +20,7 @@ entity  derivative is
          F       : in std_logic_vector (n-1 downto 0);
          DIR1    : in std_logic_vector (2 downto 0);
          DIR2    : in std_logic_vector (2 downto 0);
-         DIFF_OUT: out std_logic_vector (n-1 downto 0);
+         DIFF_OUT: out std_logic_vector (10 downto 0);
          DIR_OUT : out std_logic_vector (2 downto 0)
         );
 end derivative;
@@ -29,8 +29,8 @@ end derivative;
 -- Architecture
 --------------------------------------------------------------------------------
 architecture behavioral of derivative is
-  signal MINUEND : std_logic_vector(n-1 downto 0);
-  signal SUBTRAHEND : std_logic_vector(n-1 downto 0);
+  signal MINUEND : std_logic_vector(10 downto 0);
+  signal SUBTRAHEND : std_logic_vector(10 downto 0);
   signal GREATEST : std_logic;
 begin 
   

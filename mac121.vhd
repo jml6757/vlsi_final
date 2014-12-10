@@ -17,7 +17,7 @@ entity  mac121 is
    port (A       : in std_logic_vector (n-1 downto 0);
          B       : in std_logic_vector (n-1 downto 0);
          C       : in std_logic_vector (n-1 downto 0);
-         SUM     : out std_logic_vector (n-1 downto 0)
+         SUM     : out std_logic_vector (10 downto 0)
         );
 end mac121;
 
@@ -25,11 +25,12 @@ end mac121;
 -- Architecture
 --------------------------------------------------------------------------------
 architecture behavioral of mac121 is
-  signal B_SHIFTED : std_logic_vector(n-1 downto 0);
+  signal B_SHIFTED : std_logic_vector(10 downto 0);
 begin 
-
-  B_SHIFTED(n-1 downto 1) <= B(n-2 downto 0);
+  B_SHIFTED(8 downto 1) <= B(7 downto 0);
   B_SHIFTED(0) <= '0';
+  B_SHIFTED(9) <= '0';
+  B_SHIFTED(10) <= '0';
   SUM <= std_logic_vector(unsigned(A) + unsigned(B_SHIFTED) + unsigned(C));
 
 end behavioral;

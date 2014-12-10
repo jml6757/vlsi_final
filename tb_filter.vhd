@@ -36,7 +36,7 @@ architecture tb of tb_filter is
     file outFile : TEXT open WRITE_MODE is "Photographer3.pgm";
 
     shared variable inimage, outimage : timage;
-    shared variable line1, line2, line3, line4 : line;
+    shared variable line1, line2, line3 : line;
 
     -- Signals to control Sobel block
     signal T00, T01, T02, T10, T11, T12, T20, T21, T22 : std_logic_vector(7 downto 0);
@@ -68,7 +68,11 @@ begin
         RESET <= '1';
         wait for 5 ns;
         RESET <= '0';
-      
+        
+        readline( inFile, line1 );
+        readline( inFile, line2 );
+        readline( inFile, line3 );
+        
         --read  file
         while not endfile( inFile ) loop
             --get line
@@ -82,7 +86,7 @@ begin
                 read( tempLine, pixel, status );
                 if (status = true) then
 
-                    -- Stores all pixels of the image
+                    -- Stores all pixels of the imagez
                     inimage(row,col) := pixel; 
                     if ( col = im_col ) then 
                         col := 1;
@@ -94,7 +98,7 @@ begin
             end loop;
         end loop;
   
-        col := 2;
+        col := 1;
         row := 2;
         readdone <= true;
         wait;
@@ -107,7 +111,7 @@ begin
        
         wait until CLOCK'event and CLOCK = '1';
         
-        if (readdone = true) then
+        if (readdone = true and row < im_row) then
             if (READY = '1') then  
 
                 -- gets every pixel in the column then moves to a new row
@@ -118,8 +122,8 @@ begin
                     col := col + 1;
                 end if;
     
-                if row <= im_row-2 then
-                    if col <= im_col-2 then
+                if row <= im_row-1 then
+                    if col <= im_col-1 then
                         -- Load in 3x3 pixel map.
                         t00 <= std_logic_vector(to_unsigned(inimage(row-1,col-1), 8));
                         t01 <= std_logic_vector(to_unsigned(inimage(row-1,col), 8));
@@ -163,7 +167,7 @@ begin
 
     -- Filter Output Handler 
     -- Sets pixels on an edge to white, all others will be black
-    edge_detect: process(EDGE)
+    edge_detect: process(O_VALID)
     begin
         if(EDGE = '1' and O_VALID = '1') then
             outimage(row,col) := 255;
@@ -177,6 +181,9 @@ begin
     begin
 
         wait until procdone = true;
+        writeline( outFile, line1 );
+        writeline( outFile, line2 );
+        writeline( outFile, line3 );
 
         for row in 1 to im_row loop 
             for col in 1 to im_col loop
