@@ -30,7 +30,7 @@ end filter;
 architecture behavioral of filter is
   constant timer_size : integer := 8;
   signal   timer_count      : std_logic_vector(timer_size-1 downto 0);
-  signal   timer_start     : std_logic := '0';
+  signal   timer_start     : std_logic;
   signal   timer_finished  : std_logic;
   signal   timer_busy      : std_logic;
 begin 

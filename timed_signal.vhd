@@ -29,11 +29,12 @@ architecture behavioral of timed_signal is
   signal time_remaining : std_logic_vector(size-1 downto 0);
 begin
 
-  process(clock, start)
+  process(clock, start, signal_time)
   begin
 
     if(start = '1') then
       time_remaining <= signal_time;
+      finished <= '0';
     elsif(clock'event and clock='1') then
       
       -- By default the timing should be finished

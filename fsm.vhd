@@ -84,6 +84,8 @@ begin
       -- Circuit is ready for input
       when idle =>
         o_ready <= '1';
+        o_valid <= '1';
+        o_start <= '0';
         
       -- Inform counter to start
       when start =>
@@ -101,6 +103,7 @@ begin
       when finished =>
         o_ready <= '0';
         o_valid <= '1';
+        o_start <= '0';
 
     end case;
   end process;
