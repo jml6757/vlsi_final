@@ -24,6 +24,7 @@ use ieee.numeric_std.all;
 entity sobel is
   port    (
            T00, T01, T02, T10, T11, T12, T20, T21, T22: in std_logic_vector(7 downto 0); -- Pixel inputs
+           EDGE_THRESHOLD: in std_logic_vector(10 downto 0);                                  -- Edge Threshold
            EDGE: out std_logic;                                                          -- If there is an edge
            DIRECTION: out std_logic_vector(2 downto 0)                                   -- Max derivative direction
            );
@@ -62,11 +63,7 @@ architecture behavioral of sobel is
   signal MAX_PERPENDICULAR : std_logic_vector(10 downto 0);
 
   -- The calculated data for thresholding
-  signal EDGE_VALUE : std_logic_vector(10 downto 0); 
-  
-  -- 80
-  constant EDGE_THRESHOLD : std_logic_vector(10 downto 0) := "00001010000";
-
+  signal EDGE_VALUE : std_logic_vector(10 downto 0);
 
 begin
 

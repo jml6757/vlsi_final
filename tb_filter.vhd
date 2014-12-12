@@ -19,6 +19,9 @@ end tb_filter;
 --------------------------------------------------------------------------------
 architecture tb of tb_filter is
   
+    constant clkPeriod : time := 1 ns;
+    constant THRESHOLD : std_logic_vector(10 downto 0) := "00011001000";
+    
     -- Variables to hold the maximum number of columns and rows in the image
     -- being processed. 
     shared variable im_row : integer := 256;
@@ -28,15 +31,13 @@ architecture tb of tb_filter is
     shared variable row : integer := 1;
     shared variable col : integer := 1;
 
-
     -- File objects for accessing input and output image files, as well
     -- as variables to hold the images internally. 
     type timage is array( 1 to 256, 1 to 256 ) of integer range 0 to 255;
-    file inFile : TEXT open READ_MODE is "test1.pgm";
-    file outFile : TEXT open WRITE_MODE is "Photographer3.pgm";
+    file inFile : TEXT open READ_MODE is "test2.pgm";
+    file outFile : TEXT open WRITE_MODE is "Mandril.pgm";
 
     shared variable inimage, outimage : timage;
-    shared variable line1, line2, line3 : line;
 
     -- Signals to control Sobel block
     signal T00, T01, T02, T10, T11, T12, T20, T21, T22 : std_logic_vector(7 downto 0);
@@ -55,8 +56,7 @@ architecture tb of tb_filter is
 begin 
 
     U1: entity work.filter(behavioral)
-        port map(T00, T01, T02, T10, T11, T12, T20, T21, T22, CLOCK, I_VALID, RESET, READY, O_VALID, EDGE, DIRECTION);
-
+        port map(T00, T01, T02, T10, T11, T12, T20, T21, T22, CLOCK, I_VALID, RESET, THRESHOLD, READY, O_VALID, EDGE, DIRECTION);
 
     -- Initialize Filter, Read in Image
     test_process: process
@@ -66,12 +66,8 @@ begin
 
     begin
         RESET <= '1';
-        wait for 5 ns;
+        wait for clkPeriod;
         RESET <= '0';
-        
-        readline( inFile, line1 );
-        readline( inFile, line2 );
-        readline( inFile, line3 );
         
         --read  file
         while not endfile( inFile ) loop
@@ -103,7 +99,6 @@ begin
         readdone <= true;
         wait;
     end process;
-
 
     -- Apply Filter to Image
     image_proc1: process
@@ -138,9 +133,9 @@ begin
                         -- Set input valid signal to trigger filter
                         I_VALID <= '1';
                         -- Wait long enough for State machine to detect I_Valid on a clock edge.
-                        WAIT for 25 ns;  
+                        WAIT for 3 * clkPeriod;  
                         I_VALID <= '0';
-                        wait for 10 ns;  -- Turn off before next clock edge. 
+                        wait for 2 * clkPeriod;  -- Turn off before next clock edge. 
                     end if;
                 end if;
 
@@ -159,7 +154,7 @@ begin
     clock_proc: process
     begin
         clk <= not clk;
-        wait for 5 ns;
+        wait for clkPeriod;
     end process;
 
     CLOCK <= clk;
@@ -181,9 +176,6 @@ begin
     begin
 
         wait until procdone = true;
-        writeline( outFile, line1 );
-        writeline( outFile, line2 );
-        writeline( outFile, line3 );
 
         for row in 1 to im_row loop 
             for col in 1 to im_col loop
