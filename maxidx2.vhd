@@ -10,7 +10,7 @@ use ieee.std_logic_1164.all;
 -- Entity
 --------------------------------------------------------------------------------
 entity  maxidx2 is
-   generic (n : integer := 12); 
+   generic (n : integer := 8); 
    port (A       : in std_logic_vector (n-1 downto 0);
          B       : in std_logic_vector (n-1 downto 0);
          IDX     : out std_logic

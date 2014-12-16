@@ -52,7 +52,7 @@ architecture tb of tb_derivative is
 	signal D      : std_logic_vector(n-1 downto 0);
 	signal E      : std_logic_vector(n-1 downto 0);
 	signal F      : std_logic_vector(n-1 downto 0);
-	signal DIFF   : std_logic_vector(n+3 downto 0);
+	signal DIFF   : std_logic_vector(n+1 downto 0);
 	signal DIR    : std_logic_vector(2 downto 0);
 
 begin

@@ -10,7 +10,7 @@ use ieee.numeric_std.all;
 -- Entity
 --------------------------------------------------------------------------------
 entity  tb_sobel is
-	 generic (n : integer := 8);
+	generic (n : integer := 8);
 end tb_sobel;
 
 --------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ architecture tb of tb_sobel is
 	);
 
 	-- Constant direction vectors
-	constant EDGE_THRESHOLD: std_logic_vector(12 downto 0) := std_logic_vector(to_signed(80, 13));   
+	constant EDGE_THRESHOLD: std_logic_vector(n+2 downto 0) := std_logic_vector(to_signed(80, n+3));   
 
 	-- Input and output signals
 	signal T00  : std_logic_vector(n-1 downto 0);

@@ -11,7 +11,7 @@ use ieee.std_logic_1164.all;
 -- Entity
 --------------------------------------------------------------------------------
 entity  max4 is
-   generic (n : integer := 12); 
+   generic (n : integer := 10); 
    port (A       : in std_logic_vector (n-1 downto 0);
          A_DIR   : in std_logic_vector (2 downto 0);
          B       : in std_logic_vector (n-1 downto 0);

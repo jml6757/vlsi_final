@@ -12,6 +12,7 @@ use ieee.numeric_std.all;
 -- Entity
 --------------------------------------------------------------------------------
 entity  tb_filter is
+    generic (n : integer := 8);
 end tb_filter;
 
 --------------------------------------------------------------------------------
@@ -20,7 +21,7 @@ end tb_filter;
 architecture tb of tb_filter is
   
     constant clkPeriod : time := 1 ns;
-    constant THRESHOLD : std_logic_vector(12 downto 0) := std_logic_vector(to_signed(80, 13));
+    constant THRESHOLD : std_logic_vector(n+2 downto 0) := std_logic_vector(to_signed(80, n+3));
     
     -- Variables to hold the maximum number of columns and rows in the image
     -- being processed. 
@@ -40,7 +41,7 @@ architecture tb of tb_filter is
     shared variable inimage, outimage : timage;
 
     -- Signals to control Sobel block
-    signal T00, T01, T02, T10, T11, T12, T20, T21, T22 : std_logic_vector(7 downto 0);
+    signal T00, T01, T02, T10, T11, T12, T20, T21, T22 : std_logic_vector(n-1 downto 0);
     signal CLOCK     : std_logic;
     signal I_VALID   : std_logic := '0';
     signal RESET     : std_logic;
@@ -56,6 +57,7 @@ architecture tb of tb_filter is
 begin 
 
     U1: entity work.filter(behavioral)
+        generic map(n)
         port map(T00, T01, T02, T10, T11, T12, T20, T21, T22, CLOCK, I_VALID, RESET, THRESHOLD, READY, O_VALID, EDGE, DIRECTION);
 
     -- Initialize Filter, Read in Image
@@ -120,15 +122,15 @@ begin
                 if row <= im_row-1 then
                     if col <= im_col-1 then
                         -- Load in 3x3 pixel map.
-                        t00 <= std_logic_vector(to_unsigned(inimage(row-1,col-1), 8));
-                        t01 <= std_logic_vector(to_unsigned(inimage(row-1,col), 8));
-                        t02 <= std_logic_vector(to_unsigned(inimage(row-1,col+1), 8));
-                        t10 <= std_logic_vector(to_unsigned(inimage(row,col-1), 8));
-                        t11 <= std_logic_vector(to_unsigned(inimage(row,col), 8));
-                        t12 <= std_logic_vector(to_unsigned(inimage(row,col+1), 8));
-                        t20 <= std_logic_vector(to_unsigned(inimage(row+1,col-1), 8));
-                        t21 <= std_logic_vector(to_unsigned(inimage(row+1,col), 8));
-                        t22 <= std_logic_vector(to_unsigned(inimage(row+1,col+1), 8));
+                        t00 <= std_logic_vector(to_unsigned(inimage(row-1,col-1), n));
+                        t01 <= std_logic_vector(to_unsigned(inimage(row-1,col),   n));
+                        t02 <= std_logic_vector(to_unsigned(inimage(row-1,col+1), n));
+                        t10 <= std_logic_vector(to_unsigned(inimage(row,col-1),   n));
+                        t11 <= std_logic_vector(to_unsigned(inimage(row,col),     n));
+                        t12 <= std_logic_vector(to_unsigned(inimage(row,col+1),   n));
+                        t20 <= std_logic_vector(to_unsigned(inimage(row+1,col-1), n));
+                        t21 <= std_logic_vector(to_unsigned(inimage(row+1,col),   n));
+                        t22 <= std_logic_vector(to_unsigned(inimage(row+1,col+1), n));
 
                         -- Set input valid signal to trigger filter
                         I_VALID <= '1';

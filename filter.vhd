@@ -11,16 +11,17 @@ use ieee.numeric_std.all;
 -- Entity
 --------------------------------------------------------------------------------
 entity filter is
+  generic (n : integer := 8);
   port (
-       T00, T01, T02, T10, T11, T12, T20, T21, T22: in std_logic_vector(7 downto 0); -- Pixel inputs
-       CLOCK     : in std_logic;                                                     -- Clock signal
-       I_VALID   : in std_logic;                                                     -- If the input is valid
-       RESET     : in std_logic;                                                     -- If we should reset everything
-       THRESHOLD : in std_logic_vector(12 downto 0);                                 -- Edge Threshold for sobel
-       READY     : out std_logic;                                                    -- If the circuit is ready for input
-       O_VALID   : out std_logic;                                                    -- If the output is valid
-       EDGE      : out std_logic;                                                    -- If there is an edge
-       DIRECTION : out std_logic_vector(2 downto 0)                                  -- Max derivative direction
+       T00, T01, T02, T10, T11, T12, T20, T21, T22: in std_logic_vector(n-1 downto 0); -- Pixel inputs
+       CLOCK     : in std_logic;                                                       -- Clock signal
+       I_VALID   : in std_logic;                                                       -- If the input is valid
+       RESET     : in std_logic;                                                       -- If we should reset everything
+       THRESHOLD : in std_logic_vector(n+2 downto 0);                                  -- Edge Threshold for sobel
+       READY     : out std_logic;                                                      -- If the circuit is ready for input
+       O_VALID   : out std_logic;                                                      -- If the output is valid
+       EDGE      : out std_logic;                                                      -- If there is an edge
+       DIRECTION : out std_logic_vector(2 downto 0)                                    -- Max derivative direction
        );
 end filter;
 
@@ -32,6 +33,7 @@ architecture behavioral of filter is
 begin 
 
   sobel_inst : entity work.sobel(behavioral)
+    generic map(n)
     port map(T00, T01, T02, T10, T11, T12, T20, T21, T22, THRESHOLD, EDGE, DIRECTION);
 
   fsm_inst : entity work.fsm(behavioral)

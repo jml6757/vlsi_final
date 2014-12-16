@@ -41,7 +41,7 @@ architecture tb of tb_mac121 is
 	signal A      : std_logic_vector(n-1 downto 0);
 	signal B      : std_logic_vector(n-1 downto 0);
 	signal C      : std_logic_vector(n-1 downto 0);
-	signal SUM   : std_logic_vector(n+2 downto 0);
+	signal SUM   : std_logic_vector(n+1 downto 0);
 
 begin
 

@@ -40,7 +40,7 @@ architecture tb of tb_absdiff2 is
 	-- Input and output signals
 	signal A        : std_logic_vector(n-1 downto 0);
 	signal B        : std_logic_vector(n-1 downto 0);
-	signal DIFF     : std_logic_vector (n downto 0);
+	signal DIFF     : std_logic_vector (n-1 downto 0);
 	signal GREATEST : std_logic_vector (0 downto 0);
 
 begin
