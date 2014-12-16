@@ -1,7 +1,6 @@
 -------------------------------------------------------------------------------
 -- tb_filter: Tests the edge detection for 3x3 sized inputed file
 --------------------------------------------------------------------------------
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_textio.all;
@@ -12,6 +11,7 @@ use ieee.numeric_std.all;
 -- Entity
 --------------------------------------------------------------------------------
 entity  tb_filter3 is
+    generic (n : integer := 8);
 end tb_filter3;
 
 --------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ end tb_filter3;
 architecture tb of tb_filter3 is
   
     constant clkPeriod : time := 1 ns;
-    constant THRESHOLD : std_logic_vector(12 downto 0) := std_logic_vector(to_signed(80, 13));
+    constant THRESHOLD : std_logic_vector(n+2 downto 0) := std_logic_vector(to_signed(80, n+3));
     
     -- Variables to hold the maximum number of columns and rows in the image
     -- being processed. 
@@ -33,14 +33,15 @@ architecture tb of tb_filter3 is
 
     -- File objects for accessing input and output image files, as well
     -- as variables to hold the images internally. 
-    type timage is array( 1 to 4, 1 to 4 ) of integer range 0 to 255;
-    file inFile : TEXT open READ_MODE is "images/test2.pgm";
-    file outFile : TEXT open WRITE_MODE is "images/test2_80.pgm";
+    type timage is array( 1 to 3, 1 to 3 ) of integer range 0 to 255;
+    file inFile : TEXT open READ_MODE is "images/north.pgm";
+    file outFile : TEXT open WRITE_MODE is "images/north_80.pgm";
 
     shared variable inimage, outimage : timage;
+    shared variable line1, line2, line3 : line;
 
     -- Signals to control Sobel block
-    signal T00, T01, T02, T10, T11, T12, T20, T21, T22 : std_logic_vector(7 downto 0);
+    signal T00, T01, T02, T10, T11, T12, T20, T21, T22 : std_logic_vector(n-1 downto 0);
     signal CLOCK     : std_logic;
     signal I_VALID   : std_logic := '0';
     signal RESET     : std_logic;
@@ -56,32 +57,36 @@ architecture tb of tb_filter3 is
 begin 
 
     U1: entity work.filter(behavioral)
+        generic map(n)
         port map(T00, T01, T02, T10, T11, T12, T20, T21, T22, CLOCK, I_VALID, RESET, THRESHOLD, READY, O_VALID, EDGE, DIRECTION);
 
     -- Initialize Filter, Read in Image
-    test_process: process
+    read_process: process
         variable tempLine : line;
         variable pixel : integer; 
         variable status : boolean;
-
     begin
         RESET <= '1';
         wait for clkPeriod;
         RESET <= '0';
         
-        --read  file
+        -- Read pgm header
+        readline( inFile, line1 );
+        readline( inFile, line2 );
+        readline( inFile, line3 );
+
+        -- Read pixel content
         while not endfile( inFile ) loop
-            --get line
+            
+            -- Get a line
             readline( inFile, tempLine );
             status := true;
 
-            --check for end of line
+            -- Check for end of line
             while (status = true) loop   
-
-                --read pixels from line
+                -- Read pixels from line
                 read( tempLine, pixel, status );
                 if (status = true) then
-
                     -- Stores all pixels of the imagez
                     inimage(row,col) := pixel; 
                     if ( col = im_col ) then 
@@ -94,64 +99,51 @@ begin
             end loop;
         end loop;
   
-        col := 1;
+        col := 2;
         row := 2;
         readdone <= true;
+
+        -- Halt forever
         wait;
+
     end process;
 
     -- Apply Filter to Image
-    image_proc1: process
+    image_process: process
     begin
        
         wait until CLOCK'event and CLOCK = '1';
         
-        if (readdone = true and row < im_row) then
-            if (READY = '1') then  
+        if (readdone = true and procdone = false) then
+            if (READY = '1') then
 
-                -- gets every pixel in the column then moves to a new row
-                if ( col = im_col ) then          
-                    col := 2;
-                    row := row + 1;
-                else
-                    col := col + 1;
-                end if;
-    
-                if row <= im_row-1 then
-                    if col <= im_col-1 then
-                        -- Load in 3x3 pixel map.
-                        t00 <= std_logic_vector(to_unsigned(inimage(row-1,col-1), 8));
-                        t01 <= std_logic_vector(to_unsigned(inimage(row-1,col), 8));
-                        t02 <= std_logic_vector(to_unsigned(inimage(row-1,col+1), 8));
-                        t10 <= std_logic_vector(to_unsigned(inimage(row,col-1), 8));
-                        t11 <= std_logic_vector(to_unsigned(inimage(row,col), 8));
-                        t12 <= std_logic_vector(to_unsigned(inimage(row,col+1), 8));
-                        t20 <= std_logic_vector(to_unsigned(inimage(row+1,col-1), 8));
-                        t21 <= std_logic_vector(to_unsigned(inimage(row+1,col), 8));
-                        t22 <= std_logic_vector(to_unsigned(inimage(row+1,col+1), 8));
-
-                        -- Set input valid signal to trigger filter
-                        I_VALID <= '1';
-                        -- Wait long enough for State machine to detect I_Valid on a clock edge.
-                        WAIT for 3 * clkPeriod;  
-                        I_VALID <= '0';
-                        wait for 2 * clkPeriod;  -- Turn off before next clock edge. 
-                    end if;
-                end if;
+                -- Input pixel values to the filter
+                t00 <= std_logic_vector(to_unsigned(inimage(row-1,col-1), n));
+                t01 <= std_logic_vector(to_unsigned(inimage(row-1,col),   n));
+                t02 <= std_logic_vector(to_unsigned(inimage(row-1,col+1), n));
+                t10 <= std_logic_vector(to_unsigned(inimage(row,col-1),   n));
+                t11 <= std_logic_vector(to_unsigned(inimage(row,col),     n));
+                t12 <= std_logic_vector(to_unsigned(inimage(row,col+1),   n));
+                t20 <= std_logic_vector(to_unsigned(inimage(row+1,col-1), n));
+                t21 <= std_logic_vector(to_unsigned(inimage(row+1,col),   n));
+                t22 <= std_logic_vector(to_unsigned(inimage(row+1,col+1), n));
+                
+                -- Set input valid signal to trigger filter state machine
+                I_VALID <= '1';
+                wait for 3 * clkPeriod;  
+                I_VALID <= '0';
+                
+                -- Halt forever
+                wait;
 
             end if;
-        end if;
-
-        -- Notify image output process when complete image has been processed.
-        if (row = im_col-1 and col = im_col-1) then
-            procdone <= true;
         end if;
   
     end process;
 
 
     --Clock Process
-    clock_proc: process
+    clock_process: process
     begin
         clk <= not clk;
         wait for clkPeriod;
@@ -160,23 +152,36 @@ begin
     CLOCK <= clk;
 
 
-    -- Filter Output Handler 
     -- Sets pixels on an edge to white, all others will be black
-    edge_detect: process(O_VALID)
+    edge_process: process(O_VALID)
     begin
-        if(EDGE = '1' and O_VALID = '1') then
-            outimage(row,col) := 255;
+        if(O_VALID = '1') then
+            
+            -- Write the edge if necessary
+            if(EDGE = '1') then
+                outimage(row,col) := 255;
+            end if; 
+            
+            -- Signal that procedure is finished 
+            procdone <= true;
+
         end if;  
     end process;
 
 
 -- Write filtered image to output file
-    writing1: process
+    write_process: process
         variable lineout : line;
     begin
 
         wait until procdone = true;
 
+        -- Write pgm header
+        writeline( outfile, line1 );
+        writeline( outfile, line2 );
+        writeline( outfile, line3 );
+
+        -- Write pixel content
         for row in 1 to im_row loop 
             for col in 1 to im_col loop
                 write( lineout, outimage(row, col) );
