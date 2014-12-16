@@ -30,20 +30,22 @@ begin
   
   	--- Create carry lookahead adder
 	subtract_cla1 : entity work.cla(structural)
-		port map   (A, B, '1', DIFF_A_B);
+    generic map(n)
+		port map(A, B, '1', DIFF_A_B);
 		  
 		--- Create carry lookahead adder
 	subtract_cla2 : entity work.cla(structural)
-		port map   (B, A, '1', DIFF_B_A);
+    generic map(n)
+		port map(B, A, '1', DIFF_B_A);
   
   maxidx_inst0: entity work.maxidx2(behavioral)
-    generic map (n => n-1)
+    generic map(n => n-1)
     port map(A, B, MAX_IDX_AB);
   
   GREATEST <= MAX_IDX_AB;
   
   mux_inst0: entity work.mux2(behavioral) 
-    generic map (n => n+1)
+    generic map(n => n+1)
     port map(DIFF_A_B, DIFF_B_A, MAX_IDX_AB, DIFF);
 
 end behavioral;

@@ -10,167 +10,98 @@ use ieee.numeric_std.all;
 -- Entity
 --------------------------------------------------------------------------------
 entity  tb_sobel is
-   generic (n : integer := 8);
+	 generic (n : integer := 8);
 end tb_sobel;
 
 --------------------------------------------------------------------------------
 -- Architecture
 --------------------------------------------------------------------------------
 architecture tb of tb_sobel is
-  signal T00, T01, T02, T10, T11, T12, T20, T21, T22 : std_logic_vector(7 downto 0);
-  signal EDGE_THRESHOLD: std_logic_vector(12 downto 0) := std_logic_vector(to_signed(80, 13));   
-  signal EDGE       : std_logic;
-  signal DIRECTION   : std_logic_vector (2 downto 0);
+
+	-- Define record type
+	type data_t is record
+		t00  : integer; -- T00 Input
+		t01  : integer; -- T01 Input
+		t02  : integer; -- T02 Input
+		t10  : integer; -- T10 Input
+		t11  : integer; -- T11 Input
+		t12  : integer; -- T12 Input
+		t20  : integer; -- T20 Input
+		t21  : integer; -- T21 Input
+		t22  : integer; -- T22 Input
+		edge : std_logic; -- If Edge Exists (Expected)
+		dir  : std_logic_vector(2 downto 0); -- Direction (Expected) 
+	end record data_t;
+	
+	-- Define test table type
+	type table_t is array (natural range <>) of data_t;
+
+	-- Specify test cases
+	constant tests : table_t :=
+	( 
+		(  0,   0,   0, 255,   0,   0, 255, 255,   0, '1', "111"),  -- NE_SW SouthWest edge
+		(  0, 255, 255,   0,   0, 255,   0,   0,   0, '1', "110"),  -- NE_SW NorthEast edge
+		(  0,   0,   0,   0,   0,   0, 255, 255, 255, '1', "011"),  -- N_S South edge
+		(255, 255, 255,   0,   0,   0,   0,   0,   0, '1', "010"),  -- N_S North edge
+		(255,   0,   0, 255,   0,   0, 255,   0,   0, '1', "001"),  -- E_W West edge
+		(  0,   0, 255,   0,   0, 255,   0,   0, 255, '1', "000"),  -- E_W East edge
+		(  0,   0,   0,   0,   0, 255,   0, 255, 255, '1', "101"),  -- NW_SE SouthEast edge
+		(255, 255,   0, 255,   0,   0,   0,   0,   0, '1', "100"),  -- NW_SE Northwest edge
+		(  0,   0,   0,   0,   0,   0,   0,   0,   0, '0', "000"),  -- All Black
+		(255, 255, 255, 255, 255, 255, 255, 255, 255, '0', "000")   -- All White
+	);
+
+	-- Constant direction vectors
+	constant EDGE_THRESHOLD: std_logic_vector(12 downto 0) := std_logic_vector(to_signed(80, 13));   
+
+	-- Input and output signals
+	signal T00  : std_logic_vector(n-1 downto 0);
+	signal T01  : std_logic_vector(n-1 downto 0);
+	signal T02  : std_logic_vector(n-1 downto 0);
+	signal T10  : std_logic_vector(n-1 downto 0);
+	signal T11  : std_logic_vector(n-1 downto 0);
+	signal T12  : std_logic_vector(n-1 downto 0);
+	signal T20  : std_logic_vector(n-1 downto 0);
+	signal T21  : std_logic_vector(n-1 downto 0);
+	signal T22  : std_logic_vector(n-1 downto 0);
+	signal EDGE : std_logic;
+	signal DIR  : std_logic_vector (2 downto 0);
+
 begin 
 
-U1: entity work.sobel(behavioral)
-  port map(T00 => T00, T01 => T01, T02 => T02, T10 => T10, T11 => T11, T12 => T12, T20 => T20, T21 => T21, T22 => T22, EDGE => EDGE, EDGE_THRESHOLD => EDGE_THRESHOLD, DIRECTION => DIRECTION);
+	--- Create sobel block
+	DUT1: entity work.sobel(behavioral)
+		port map(T00, T01, T02, T10, T11, T12, T20, T21, T22, EDGE_THRESHOLD, EDGE, DIR);
 
-test_process: process
-  begin 
-    
-  --Test NE_SW SouthWest edge
-  
-  T00 <= b"00000000";
-  T01 <= b"00000000";
-  T02 <= b"00000000";
-  T10 <= b"11111111";
-  T11 <= b"00000000";
-  T12 <= b"00000000";
-  T20 <= b"11111111";
-  T21 <= b"11111111";
-  T22 <= b"00000000";
-  
-  wait for 5 ns;
-  
-  --Test NE_SW NorthEast edge
-   
-  T00 <= b"00000000";
-  T01 <= b"11111111";
-  T02 <= b"11111111";
-  T10 <= b"00000000";
-  T11 <= b"00000000";
-  T12 <= b"11111111";
-  T20 <= b"00000000";
-  T21 <= b"00000000";
-  T22 <= b"00000000";
-  
-  wait for 5 ns;
-  
---Test N_S South edge
-   
-  T00 <= b"00000000";
-  T01 <= b"00000000";
-  T02 <= b"00000000";
-  T10 <= b"00000000";
-  T11 <= b"00000000";
-  T12 <= b"00000000";
-  T20 <= b"11111111";
-  T21 <= b"11111111";
-  T22 <= b"11111111";
-  
-  wait for 5 ns;
-  
-  --Test N_S North edge
-   
-  T00 <= b"11111111";
-  T01 <= b"11111111";
-  T02 <= b"11111111";
-  T10 <= b"00000000";
-  T11 <= b"00000000";
-  T12 <= b"00000000";
-  T20 <= b"00000000";
-  T21 <= b"00000000";
-  T22 <= b"00000000";
-  
-  wait for 5 ns;
-  
-  --Test E_W West edge
-   
-  T00 <= b"11111111";
-  T01 <= b"00000000";
-  T02 <= b"00000000";
-  T10 <= b"11111111";
-  T11 <= b"00000000";
-  T12 <= b"00000000";
-  T20 <= b"11111111";
-  T21 <= b"00000000";
-  T22 <= b"00000000";
-  
-  assert(EDGE = '1');
-  assert(DIRECTION = "111");
-  
-  wait for 5 ns;
-  
-  --Test E_W East edge
-   
-  T00 <= b"00000000";
-  T01 <= b"00000000";
-  T02 <= b"11111111";
-  T10 <= b"00000000";
-  T11 <= b"00000000";
-  T12 <= b"11111111";
-  T20 <= b"00000000";
-  T21 <= b"00000000";
-  T22 <= b"11111111";
-  
-  wait for 5 ns;
-  
-  --Test NW_SE SouthEast edge
-   
-  T00 <= b"00000000";
-  T01 <= b"00000000";
-  T02 <= b"00000000";
-  T10 <= b"00000000";
-  T11 <= b"00000000";
-  T12 <= b"11111111";
-  T20 <= b"00000000";
-  T21 <= b"11111111";
-  T22 <= b"11111111";
-  
-  wait for 5 ns;
-  
-  --Test NW_SE Northwest edge
-   
-  T00 <= b"11111111";
-  T01 <= b"11111111";
-  T02 <= b"00000000";
-  T10 <= b"11111111";
-  T11 <= b"00000000";
-  T12 <= b"00000000";
-  T20 <= b"00000000";
-  T21 <= b"00000000";
-  T22 <= b"00000000";
-  
-  wait for 5 ns;
-  
-  --Test all Black
-   
-  T00 <= b"00000000";
-  T01 <= b"00000000";
-  T02 <= b"00000000";
-  T10 <= b"00000000";
-  T11 <= b"00000000";
-  T12 <= b"00000000";
-  T20 <= b"00000000";
-  T21 <= b"00000000";
-  T22 <= b"00000000";
-  
-  wait for 5 ns;
-  
-  --Test all White
-   
-  T00 <= b"11111111";
-  T01 <= b"11111111";
-  T02 <= b"11111111";
-  T10 <= b"11111111";
-  T11 <= b"11111111";
-  T12 <= b"11111111";
-  T20 <= b"11111111";
-  T21 <= b"11111111";
-  T22 <= b"11111111";
-  
-  wait for 5 ns;
-  
-end process;
+	-- Test the circuit
+	test_proc: process
+	begin		
+		for i in tests'range loop
+
+			-- Input test vectors
+			T00 <= std_logic_vector(to_unsigned(tests(i).t00, n));
+			T01 <= std_logic_vector(to_unsigned(tests(i).t01, n));
+			T02 <= std_logic_vector(to_unsigned(tests(i).t02, n));
+			T10 <= std_logic_vector(to_unsigned(tests(i).t10, n));
+			T11 <= std_logic_vector(to_unsigned(tests(i).t11, n));
+			T12 <= std_logic_vector(to_unsigned(tests(i).t12, n));
+			T20 <= std_logic_vector(to_unsigned(tests(i).t20, n));
+			T21 <= std_logic_vector(to_unsigned(tests(i).t21, n));
+			T22 <= std_logic_vector(to_unsigned(tests(i).t22, n));
+			wait for 5 ns;
+		
+			-- Check result against Expected
+			assert (tests(i).edge = EDGE) 
+				report "Incorrect EDGE";
+
+			assert (tests(i).dir = DIR)
+				report "Incorrect DIR";
+
+		end loop;		
+
+		-- Halt after looping
+		wait;
+
+	end process;
+
 end tb;
