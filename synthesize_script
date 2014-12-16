@@ -1,6 +1,6 @@
 set exclude_gates {PadInC PadOut}
 load_library /tools/mentor/adk/technology/leonardo/tsmc018_typ.syn
-read {mac121.vhd absdiff2.vhd mux2.vhd maxidx2.vhd fsm.vhd max4.vhd derivative.vhd sobel.vhd filter.vhd}
+read {mac121.vhd mux2.vhd maxidx2.vhd absdiff2.vhd fsm.vhd max4.vhd derivative.vhd sobel.vhd filter.vhd}
 ungroup -all -hier
 set sdf_write_flat_netlist TRUE
 optimize
