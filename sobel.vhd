@@ -24,7 +24,7 @@ use ieee.numeric_std.all;
 entity sobel is
   port    (
            T00, T01, T02, T10, T11, T12, T20, T21, T22: in std_logic_vector(7 downto 0); -- Pixel inputs
-           EDGE_THRESHOLD: in std_logic_vector(10 downto 0);                                  -- Edge Threshold
+           EDGE_THRESHOLD: in std_logic_vector(12 downto 0);                                  -- Edge Threshold
            EDGE: out std_logic;                                                          -- If there is an edge
            DIRECTION: out std_logic_vector(2 downto 0)                                   -- Max derivative direction
            );
@@ -46,10 +46,10 @@ architecture behavioral of sobel is
   constant DIR_SW : std_logic_vector(2 downto 0) := "111";
 
   -- Derivative output values
-  signal deriv_out_NE_SW : std_logic_vector(10 downto 0);
-  signal deriv_out_N_S   : std_logic_vector(10 downto 0);
-  signal deriv_out_E_W   : std_logic_vector(10 downto 0);
-  signal deriv_out_NW_SE : std_logic_vector(10 downto 0);
+  signal deriv_out_NE_SW : std_logic_vector(11 downto 0);
+  signal deriv_out_N_S   : std_logic_vector(11 downto 0);
+  signal deriv_out_E_W   : std_logic_vector(11 downto 0);
+  signal deriv_out_NW_SE : std_logic_vector(11 downto 0);
 
   -- Derivative output directions
   signal deriv_dir_NE_SW : std_logic_vector(2 downto 0);
@@ -59,11 +59,13 @@ architecture behavioral of sobel is
 
   -- Maximum derivative output
   signal MAX_DIRECTION     : std_logic_vector(2 downto 0);
-  signal MAX_DERIVATIVE    : std_logic_vector(10 downto 0);
-  signal MAX_PERPENDICULAR : std_logic_vector(10 downto 0);
+  signal MAX_DERIVATIVE    : std_logic_vector(11 downto 0);
+  signal MAX_PERPENDICULAR : std_logic_vector(11 downto 0);
 
   -- The calculated data for thresholding
-  signal EDGE_VALUE : std_logic_vector(10 downto 0);
+  signal EDGE_VALUE : std_logic_vector(12 downto 0);
+  
+  signal SHIFTED_PERPENDICULAR : std_logic_vector(11 downto 0);
 
 begin
 
@@ -88,8 +90,11 @@ begin
              deriv_out_NW_SE, deriv_dir_NW_SE,
              MAX_DIRECTION, MAX_DERIVATIVE, MAX_PERPENDICULAR);
 
+  SHIFTED_PERPENDICULAR <= "000" & MAX_PERPENDICULAR(11 downto 3);
   -- Determine the edge value to be thresholded
-  EDGE_VALUE <= std_logic_vector(unsigned(MAX_DERIVATIVE) + unsigned("000" & MAX_PERPENDICULAR(10 downto 3)));
+  adder_cla : entity work.cla(structural)
+		generic map(12)
+		port map   (MAX_DERIVATIVE, SHIFTED_PERPENDICULAR, '0', EDGE_VALUE);
 
   -- Set the output values
 

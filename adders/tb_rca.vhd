@@ -8,26 +8,23 @@ use ieee.std_logic_1164.all;
 -- Entity
 --------------------------------------------------------------------------------
 
-entity tb_adders is
+entity tb_rca is
 	generic (n: integer := 8);
-end tb_adders;
+end tb_rca;
 
 --------------------------------------------------------------------------------
 -- Architecture
 --------------------------------------------------------------------------------
-architecture tb of tb_adders is
+architecture tb of tb_rca is
 	signal A: std_logic_vector(n-1 downto 0);
 	signal B: std_logic_vector(n-1 downto 0);
-	signal SUM_DEFAULT: std_logic_vector(n downto 0);
-	signal SUM_CLA: std_logic_vector(n downto 0);
 	signal SUM_RCA: std_logic_vector(n downto 0);
-	signal SUM_KSA: std_logic_vector(n downto 0);
 begin
 
 	--- Create default adder
-	DUT1 : entity work.adder(arch)
+	DUT1 : entity work.rca(structural)
 		generic map(n)
-		port map   (A, B, SUM_DEFAULT, SUM_CLA, SUM_RCA, SUM_KSA);
+		port map   (A, B, SUM_RCA);
 
 	--- Test using predefined inputs
 	process
@@ -67,3 +64,4 @@ begin
 	end process;
 
 end tb;
+

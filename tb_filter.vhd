@@ -20,7 +20,7 @@ end tb_filter;
 architecture tb of tb_filter is
   
     constant clkPeriod : time := 1 ns;
-    constant THRESHOLD : std_logic_vector(10 downto 0) := "00011001000";
+    constant THRESHOLD : std_logic_vector(12 downto 0) := std_logic_vector(to_signed(80, 13));
     
     -- Variables to hold the maximum number of columns and rows in the image
     -- being processed. 
@@ -34,8 +34,8 @@ architecture tb of tb_filter is
     -- File objects for accessing input and output image files, as well
     -- as variables to hold the images internally. 
     type timage is array( 1 to 256, 1 to 256 ) of integer range 0 to 255;
-    file inFile : TEXT open READ_MODE is "test2.pgm";
-    file outFile : TEXT open WRITE_MODE is "Mandril.pgm";
+    file inFile : TEXT open READ_MODE is "images/test2.pgm";
+    file outFile : TEXT open WRITE_MODE is "images/test2_80.pgm";
 
     shared variable inimage, outimage : timage;
 

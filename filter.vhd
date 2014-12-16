@@ -16,7 +16,7 @@ entity filter is
        CLOCK     : in std_logic;                                                     -- Clock signal
        I_VALID   : in std_logic;                                                     -- If the input is valid
        RESET     : in std_logic;                                                     -- If we should reset everything
-       THRESHOLD : in std_logic_vector(10 downto 0);                                 -- Edge Threshold for sobel
+       THRESHOLD : in std_logic_vector(12 downto 0);                                 -- Edge Threshold for sobel
        READY     : out std_logic;                                                    -- If the circuit is ready for input
        O_VALID   : out std_logic;                                                    -- If the output is valid
        EDGE      : out std_logic;                                                    -- If there is an edge

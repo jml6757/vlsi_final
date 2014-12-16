@@ -6,7 +6,7 @@
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.math_real.all;
+use work.math_real.all;
 
 --------------------------------------------------------------------------------
 -- Entity
@@ -25,21 +25,20 @@ end ksa;
 -- Architecture
 --------------------------------------------------------------------------------
 architecture structural of ksa is
-
-	constant STAGES : integer := integer(ceil(log2(real(n+1))));
-	
-	type lines_t is array (STAGES downto 0, n downto 0) of std_logic;
-	
-	signal P : lines_t;
-	signal G : lines_t;
-	
-	signal C: std_logic_vector(n+1 downto 0);
-
+  
 	--Returns the minimum index for the final generate and the total P+G range;
 	function idx(i : integer) return integer is
 	begin
 		return 2**(i-1);
 	end idx;
+
+	constant STAGES : integer := integer(ceil(log2(real(n+1))));
+	type lines_t is array (STAGES downto 0, n downto 0) of std_logic;
+		
+	signal P : lines_t;
+	signal G : lines_t;
+	
+	signal C: std_logic_vector(n+1 downto 0);
 
 begin
 

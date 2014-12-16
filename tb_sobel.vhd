@@ -4,6 +4,7 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 --------------------------------------------------------------------------------
 -- Entity
@@ -17,12 +18,13 @@ end tb_sobel;
 --------------------------------------------------------------------------------
 architecture tb of tb_sobel is
   signal T00, T01, T02, T10, T11, T12, T20, T21, T22 : std_logic_vector(7 downto 0);
+  signal EDGE_THRESHOLD: std_logic_vector(12 downto 0) := std_logic_vector(to_signed(80, 13));   
   signal EDGE       : std_logic;
   signal DIRECTION   : std_logic_vector (2 downto 0);
 begin 
 
 U1: entity work.sobel(behavioral)
-  port map(T00 => T00, T01 => T01, T02 => T02, T10 => T10, T11 => T11, T12 => T12, T20 => T20, T21 => T21, T22 => T22, EDGE => EDGE, DIRECTION => DIRECTION);
+  port map(T00 => T00, T01 => T01, T02 => T02, T10 => T10, T11 => T11, T12 => T12, T20 => T20, T21 => T21, T22 => T22, EDGE => EDGE, EDGE_THRESHOLD => EDGE_THRESHOLD, DIRECTION => DIRECTION);
 
 test_process: process
   begin 

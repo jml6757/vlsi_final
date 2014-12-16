@@ -17,7 +17,7 @@ entity  mac121 is
    port (A       : in std_logic_vector (n-1 downto 0);
          B       : in std_logic_vector (n-1 downto 0);
          C       : in std_logic_vector (n-1 downto 0);
-         SUM     : out std_logic_vector (10 downto 0)
+         SUM     : out std_logic_vector (n+2 downto 0)
         );
 end mac121;
 
@@ -25,13 +25,33 @@ end mac121;
 -- Architecture
 --------------------------------------------------------------------------------
 architecture behavioral of mac121 is
-  signal B_SHIFTED : std_logic_vector(10 downto 0);
-begin 
-  B_SHIFTED(8 downto 1) <= B(7 downto 0);
+  signal B_SHIFTED : std_logic_vector(n downto 0);
+  signal A_EXTEND  : std_logic_vector(n downto 0);
+  signal C_EXTEND  : std_logic_vector(n+1 downto 0);
+  signal SUM_A_B   : std_logic_vector(n+1 downto 0);
+begin
+  
+  -- Multiply B by 2
+  B_SHIFTED(n downto 1) <= B(n-1 downto 0);
   B_SHIFTED(0) <= '0';
-  B_SHIFTED(9) <= '0';
-  B_SHIFTED(10) <= '0';
-  SUM <= std_logic_vector(unsigned(A) + unsigned(B_SHIFTED) + unsigned(C));
+  
+  -- Extend A Bus
+  A_EXTEND(n-1 downto 0) <= A;
+  A_EXTEND(n) <= '0';
+  
+  -- Extend B Bus
+  C_EXTEND(n-1 downto 0) <= C;
+  C_EXTEND(n+1 downto n) <= "00";
+  
+ 	--- Add A and 2*B
+	adder_cla1 : entity work.cla(structural)
+		generic map(n+1)
+		port map   (A_EXTEND, B_SHIFTED, '0', SUM_A_B);
+		  
+  --- Add C to the sum
+	adder_cla2 : entity work.cla(structural)
+		generic map(n+2)
+		port map   (SUM_A_B, C_EXTEND, '0', SUM);
 
 end behavioral;
 

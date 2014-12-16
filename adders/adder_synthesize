@@ -1,0 +1,8 @@
+set exclude_gates {PadInC PadOut}
+load_library /tools/mentor/adk/technology/leonardo/tsmc018_typ.syn
+read {math_real.vhd cla.vhd default_adder.vhd ksa.vhd rca.vhd adder.vhd}
+set sdf_write_flat_netlist TRUE
+optimize -hierarchy preserve
+write -format verilog adders.v
+write -format vhdl adders.vhdl
+write -format sdf adders.sdf
