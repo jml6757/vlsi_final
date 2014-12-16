@@ -20,7 +20,7 @@ end tb_filter3;
 architecture tb of tb_filter3 is
   
     constant clkPeriod : time := 1 ns;
-    constant THRESHOLD : std_logic_vector(n+2 downto 0) := std_logic_vector(to_signed(80, n+3));
+    constant THRESHOLD : std_logic_vector(n+2 downto 0) := std_logic_vector(to_signed(150, n+3));
     
     -- Variables to hold the maximum number of columns and rows in the image
     -- being processed. 
@@ -34,8 +34,8 @@ architecture tb of tb_filter3 is
     -- File objects for accessing input and output image files, as well
     -- as variables to hold the images internally. 
     type timage is array( 1 to 3, 1 to 3 ) of integer range 0 to 255;
-    file inFile : TEXT open READ_MODE is "images/north.pgm";
-    file outFile : TEXT open WRITE_MODE is "images/north_80.pgm";
+    file inFile : TEXT open READ_MODE is "images/diamond.pgm";
+    file outFile : TEXT open WRITE_MODE is "images/diamond_preSynth_150.pgm";
 
     shared variable inimage, outimage : timage;
     shared variable line1, line2, line3 : line;
@@ -69,11 +69,6 @@ begin
         RESET <= '1';
         wait for clkPeriod;
         RESET <= '0';
-        
-        -- Read pgm header
-        readline( inFile, line1 );
-        readline( inFile, line2 );
-        readline( inFile, line3 );
 
         -- Read pixel content
         while not endfile( inFile ) loop
@@ -175,11 +170,6 @@ begin
     begin
 
         wait until procdone = true;
-
-        -- Write pgm header
-        writeline( outfile, line1 );
-        writeline( outfile, line2 );
-        writeline( outfile, line3 );
 
         -- Write pixel content
         for row in 1 to im_row loop 
